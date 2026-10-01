@@ -6,9 +6,7 @@ export default function Home() {
 
   return (
     <div>
-      <h1>홈</h1>
-      <p>카운트: {count}</p>
-      <button onClick={increase}>+1</button>
+      <h1 className="text-4xl font-bold text-red-600">Netflix</h1>
     </div>
   );
 }

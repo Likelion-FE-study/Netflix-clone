@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+@theme {
+  --color-netflix-red: #e50914;
+  --color-netflix-black: #141414;
+}
