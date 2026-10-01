@@ -23,7 +23,7 @@ React와 TypeScript를 기반으로 구현하며 Tailwind CSS를 사용하여 �
     <td align="center">
       <img src="./src/assets/members/juhee.jpeg" width="120" /><br />
       <b>이주희</b><br />
-      <a href="https://github.com/jooeeh16">@jooeeh16</a>
+      <a href="https://github.com/jooeeeh17">@jooeeeh17</a>
     </td>
     <td align="center">
       <img src="./src/assets/members/nagyeong.jpeg" width="120" /><br />
