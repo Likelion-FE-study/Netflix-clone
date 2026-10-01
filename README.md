@@ -1,4 +1,3 @@
-````markdown
 # 🎬 Netflix Clone
 
 Netflix UI/UX를 참고하여 제작하는 프론트엔드 클론 코딩 프로젝트입니다.
@@ -148,4 +147,3 @@ refactor: Header 컴포넌트 분리
 ## 🚀 Deployment
 
 모든 기능 개발과 테스트가 완료되면 `develop` → `main` PR을 생성하고 Vercel을 통해 배포합니다.
-````
