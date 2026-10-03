@@ -1,28 +1,36 @@
-import { Link } from "react-router";
+import { useCallback, useState } from "react";
+
+import MovieDetailModal from "../components/detail/MovieDetailModal";
+import TrendingRow from "../components/main/TrendingRow";
+import WishlistRow from "../components/wishlist/WishlistRow";
+import type { WishlistItem } from "../store/useWishlistStore";
 
 export default function MainPage() {
+  const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
+
+  // 상세 모달은 현재 영화만 지원
+  const handleSelect = (item: WishlistItem) => {
+    if (item.mediaType === "movie") {
+      setSelectedMovieId(item.id);
+    }
+  };
+
+  const handleCloseModal = useCallback(() => {
+    setSelectedMovieId(null);
+  }, []);
+
   return (
-    <main className="min-h-screen bg-[#141414] text-white">
-      <header className="flex items-center justify-between px-6 py-5 md:px-12">
-        <Link
-          to="/"
-          className="text-3xl font-black tracking-[-2px] text-[#e50914]"
-        >
-          NETFLIX
-        </Link>
-      </header>
+    <main className="pb-16">
+      <TrendingRow onSelect={handleSelect} />
 
-      <section className="flex min-h-[70vh] items-center justify-center px-6 text-center">
-        <div>
-          <h1 className="text-4xl font-bold">
-            Netflix Clone
-          </h1>
+      <WishlistRow onSelect={handleSelect} />
 
-          <p className="mt-4 text-gray-400">
-            메인 콘텐츠 화면입니다.
-          </p>
-        </div>
-      </section>
+      {selectedMovieId !== null && (
+        <MovieDetailModal
+          movieId={selectedMovieId}
+          onClose={handleCloseModal}
+        />
+      )}
     </main>
   );
 }

@@ -1,15 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   getTmdbPosterUrl,
   getTrendingMovies,
 } from "../../api/tmdbApi";
 import type { TrendingMovie } from "../../api/tmdbApi";
+import MovieModal from "./MovieModal";
 
 export default function Trending() {
   const [movies, setMovies] = useState<TrendingMovie[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
 
   const sliderRef = useRef<HTMLDivElement>(null);
 
@@ -31,6 +33,10 @@ export default function Trending() {
     };
 
     fetchTrendingMovies();
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setSelectedMovieId(null);
   }, []);
 
   const handlePrevious = () => {
@@ -100,11 +106,18 @@ export default function Trending() {
               key={movie.id}
               className="relative min-w-[180px] md:min-w-[200px]"
             >
-              <img
-                src={getTmdbPosterUrl(movie.poster_path!)}
-                alt={movie.title}
-                className="h-[280px] w-full rounded-lg object-cover transition duration-300 hover:scale-105 md:h-[300px]"
-              />
+              <button
+                type="button"
+                aria-label={`${movie.title} 상세 정보 보기`}
+                onClick={() => setSelectedMovieId(movie.id)}
+                className="block w-full rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              >
+                <img
+                  src={getTmdbPosterUrl(movie.poster_path!)}
+                  alt={movie.title}
+                  className="h-[280px] w-full rounded-lg object-cover transition duration-300 hover:scale-105 md:h-[300px]"
+                />
+              </button>
 
               <span
                 aria-hidden="true"
@@ -125,6 +138,13 @@ export default function Trending() {
           ›
         </button>
       </div>
+
+      {selectedMovieId !== null && (
+        <MovieModal
+          movieId={selectedMovieId}
+          onClose={handleCloseModal}
+        />
+      )}
     </section>
   );
 }

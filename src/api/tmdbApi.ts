@@ -7,6 +7,7 @@ export interface TrendingMovie {
   id: number;
   title: string;
   poster_path: string | null;
+  backdrop_path: string | null;
 }
 
 interface TrendingMovieResponse {
@@ -38,4 +39,165 @@ export const getTrendingMovies = async (): Promise<TrendingMovie[]> => {
 
 export const getTmdbPosterUrl = (posterPath: string) => {
   return `${TMDB_IMAGE_BASE_URL}${posterPath}`;
+};
+
+interface MovieGenre {
+  id: number;
+  name: string;
+}
+
+interface MovieReleaseDates {
+  results: {
+    iso_3166_1: string;
+    release_dates: {
+      certification: string;
+    }[];
+  }[];
+}
+
+interface MovieImages {
+  logos: {
+    file_path: string;
+    iso_639_1: string | null;
+  }[];
+}
+
+interface MovieCredits {
+  cast: {
+    name: string;
+  }[];
+}
+
+interface MovieTranslations {
+  translations: {
+    iso_639_1: string;
+    data: {
+      overview: string;
+    };
+  }[];
+}
+
+interface MovieDetailResponse {
+  id: number;
+  title: string;
+  overview: string;
+  release_date: string;
+  runtime: number | null;
+  backdrop_path: string | null;
+  poster_path: string | null;
+  genres: MovieGenre[];
+  release_dates: MovieReleaseDates;
+  images: MovieImages;
+  credits: MovieCredits;
+  translations: MovieTranslations;
+}
+
+export interface MovieDetail {
+  id: number;
+  title: string;
+  overview: string;
+  releaseYear: string;
+  certification: string;
+  runtime: number | null;
+  backdropPath: string | null;
+  posterPath: string | null;
+  logoPath: string | null;
+  genres: string[];
+  cast: string[];
+}
+
+// 한국 관람 등급을 넷플릭스 표기("15+", "ALL")로 변환
+const getKoreanCertification = (releaseDates: MovieReleaseDates) => {
+  const koreanRelease = releaseDates.results.find(
+    (result) => result.iso_3166_1 === "KR",
+  );
+
+  const certification = koreanRelease?.release_dates.find(
+    (releaseDate) => releaseDate.certification,
+  )?.certification;
+
+  if (!certification) {
+    return "";
+  }
+
+  if (certification === "ALL" || certification === "All") {
+    return "ALL";
+  }
+
+  return /^\d+$/.test(certification)
+    ? `${certification}+`
+    : certification;
+};
+
+// 한국어 줄거리가 비어 있으면 영어 줄거리로 대체
+const getOverview = (
+  koreanOverview: string,
+  translations: MovieTranslations,
+) => {
+  if (koreanOverview) {
+    return koreanOverview;
+  }
+
+  const englishTranslation = translations.translations.find(
+    (translation) =>
+      translation.iso_639_1 === "en" && translation.data.overview,
+  );
+
+  return englishTranslation?.data.overview ?? "";
+};
+
+// 한국어 로고 → 영어 로고 → 언어 없는 로고 순으로 선택
+const getTitleLogoPath = (images: MovieImages) => {
+  const logo =
+    images.logos.find((item) => item.iso_639_1 === "ko") ??
+    images.logos.find((item) => item.iso_639_1 === "en") ??
+    images.logos.find((item) => item.iso_639_1 === null);
+
+  return logo?.file_path ?? null;
+};
+
+export const getMovieDetail = async (
+  movieId: number,
+): Promise<MovieDetail> => {
+  if (!API_KEY) {
+    throw new Error("TMDB API Key가 설정되지 않았습니다.");
+  }
+
+  const params = new URLSearchParams({
+    api_key: API_KEY,
+    language: "ko-KR",
+    append_to_response: "release_dates,images,credits,translations",
+    include_image_language: "ko,en,null",
+  });
+
+  const response = await fetch(
+    `${TMDB_BASE_URL}/movie/${movieId}?${params.toString()}`,
+  );
+
+  if (!response.ok) {
+    throw new Error("콘텐츠 정보를 불러오지 못했습니다.");
+  }
+
+  const data: MovieDetailResponse = await response.json();
+
+  return {
+    id: data.id,
+    title: data.title,
+    overview: getOverview(data.overview, data.translations),
+    releaseYear: data.release_date.slice(0, 4),
+    certification: getKoreanCertification(data.release_dates),
+    runtime: data.runtime,
+    backdropPath: data.backdrop_path,
+    posterPath: data.poster_path,
+    logoPath: getTitleLogoPath(data.images),
+    genres: data.genres.map((genre) => genre.name),
+    cast: data.credits.cast.slice(0, 4).map((person) => person.name),
+  };
+};
+
+export const getTmdbImageUrl = (
+  imagePath: string,
+  size: "w500" | "w780" | "w1280" | "original" = "w1280",
+) => {
+  return `https://image.tmdb.org/t/p/${size}${imagePath}`;
 };
