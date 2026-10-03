@@ -27,7 +27,9 @@ export default function Login() {
     }
 
     loginUser();
-    navigate("/");
+
+    // 로그인 성공 시 MainPage로 이동
+    navigate("/main");
   };
 
   return (
