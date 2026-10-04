@@ -1,3 +1,9 @@
+## 🔗 배포 링크
+
+🚀 [D-Netflix 바로가기](https://netflix-clone-ten-pi-88.vercel.app/))
+
+---
+
 # 🎬 Netflix Clone
 
 Netflix UI/UX를 참고하여 제작하는 프론트엔드 클론 코딩 프로젝트입니다.
