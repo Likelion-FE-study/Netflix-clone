@@ -1,4 +1,5 @@
 interface FooterProps {
+  variant?: "landing" | "main";
   language?: "ko" | "en";
   onLanguageChange?: (language: "ko" | "en") => void;
 }
@@ -66,7 +67,63 @@ const footerLinks = [
   },
 ];
 
+const socialLinks = [
+  {
+    label: "Facebook",
+    href: "https://www.facebook.com/NetflixKR",
+    icon: <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" fill="currentColor" />,
+  },
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/netflixkr/",
+    icon: (
+      <g fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+        <rect x="2" y="2" width="20" height="20" rx="5" />
+        <circle cx="12" cy="12" r="4" />
+        <path d="M17.5 6.5h.01" />
+      </g>
+    ),
+  },
+  {
+    label: "Twitter",
+    href: "https://twitter.com/netflixkr",
+    icon: (
+      <path
+        d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"
+        fill="currentColor"
+      />
+    ),
+  },
+  {
+    label: "YouTube",
+    href: "https://www.youtube.com/channel/UCiEEF51uRAeZeCo8CJFhGWw",
+    icon: (
+      <path
+        d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33zM9.75 15.02V8.48l5.75 3.27z"
+        fill="currentColor"
+        fillRule="evenodd"
+      />
+    ),
+  },
+];
+
+const mainFooterLinks = [
+  { label: "화면 해설", href: "https://www.netflix.com/browse/audio-description" },
+  { label: "고객센터", href: "https://help.netflix.com/ko/" },
+  { label: "기프트카드", href: "https://www.netflix.com/gift-cards" },
+  { label: "미디어 센터", href: "https://media.netflix.com/" },
+  { label: "투자 정보(IR)", href: "https://ir.netflix.net/" },
+  { label: "입사 정보", href: "https://jobs.netflix.com/" },
+  { label: "이용약관", href: "https://help.netflix.com/legal/termsofuse" },
+  { label: "개인정보", href: "https://help.netflix.com/legal/privacy" },
+  { label: "법적 고지", href: "https://help.netflix.com/legal/notices" },
+  { label: "쿠키 설정", href: "https://www.netflix.com/kr/" },
+  { label: "회사 정보", href: "https://help.netflix.com/legal/corpinfo" },
+  { label: "문의하기", href: "https://help.netflix.com/ko/contactus" },
+];
+
 export default function Footer({
+  variant = "landing",
   language = "ko",
   onLanguageChange,
 }: FooterProps) {
@@ -76,6 +133,47 @@ export default function Footer({
     const selectedLanguage = event.target.value as "ko" | "en";
     onLanguageChange?.(selectedLanguage);
   };
+
+  if (variant === "main") {
+    return (
+      <footer className="mx-auto w-full max-w-[980px] px-4 pb-12 pt-16 text-neutral-500 sm:px-8 md:pt-24">
+        <ul className="mb-6 flex items-center gap-6 text-white">
+          {socialLinks.map((link) => (
+            <li key={link.label}>
+              <a
+                href={link.href}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={link.label}
+                className="block transition hover:text-neutral-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+              >
+                <svg aria-hidden="true" viewBox="0 0 24 24" className="size-6">
+                  {link.icon}
+                </svg>
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        <ul className="grid grid-cols-2 gap-x-4 gap-y-4 text-[13px] md:grid-cols-4">
+          {mainFooterLinks.map((link) => (
+            <li key={link.label}>
+              <a
+                href={link.href}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        <p className="mt-8 text-[11px]">Netflix 클론 코딩 프로젝트 · 학습용</p>
+      </footer>
+    );
+  }
 
   return (
     <footer className="bg-black px-6 pb-24 pt-14 text-[#b3b3b3]">

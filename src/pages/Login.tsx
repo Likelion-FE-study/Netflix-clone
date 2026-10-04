@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { Link, useNavigate } from "react-router";
 
+import NetflixLogo from "../components/common/NetflixLogo";
 import { getUser, loginUser } from "../utils/authStorage";
 
 export default function Login() {
@@ -33,7 +34,17 @@ export default function Login() {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-black px-6 text-white">
+    <main className="relative flex min-h-screen items-center justify-center bg-black px-6 text-white">
+      <header className="absolute inset-x-0 top-0 mx-auto flex min-h-16 w-full max-w-screen-2xl items-center px-4 py-3 sm:px-8 lg:px-12">
+        <Link
+          to="/"
+          aria-label="Netflix 홈"
+          className="shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+        >
+          <NetflixLogo />
+        </Link>
+      </header>
+
       <div className="w-full max-w-md rounded bg-black/80 p-10">
         <h1 className="mb-8 text-3xl font-bold">로그인</h1>
 
