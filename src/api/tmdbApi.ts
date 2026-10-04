@@ -306,3 +306,46 @@ export const getPopularMovies = () =>
   fetchContentList("/movie/popular", "movie", { region: "KR" });
 
 export const getPopularSeries = () => fetchContentList("/tv/popular", "tv");
+
+interface MovieVideo {
+  key: string;
+  site: string;
+  type: string;
+  iso_639_1: string;
+}
+
+interface MovieVideosResponse {
+  results: MovieVideo[];
+}
+
+export const getMovieTrailerKey = async (
+  movieId: number,
+): Promise<string | null> => {
+  if (!API_KEY) {
+    throw new Error("TMDB API Key가 설정되지 않았습니다.");
+  }
+
+  const params = new URLSearchParams({
+    api_key: API_KEY,
+    language: "ko-KR",
+    include_video_language: "ko,en,null",
+  });
+
+  const response = await fetch(
+    `${TMDB_BASE_URL}/movie/${movieId}/videos?${params.toString()}`,
+  );
+
+  if (!response.ok) {
+    throw new Error("예고편을 불러오지 못했습니다.");
+  }
+
+  const data: MovieVideosResponse = await response.json();
+  const youtubeVideos = data.results.filter((video) => video.site === "YouTube");
+
+  const trailer =
+    youtubeVideos.find((video) => video.type === "Trailer" && video.iso_639_1 === "ko") ??
+    youtubeVideos.find((video) => video.type === "Trailer") ??
+    youtubeVideos.find((video) => video.type === "Teaser");
+
+  return trailer?.key ?? null;
+};

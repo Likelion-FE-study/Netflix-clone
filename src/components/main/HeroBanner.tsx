@@ -1,9 +1,45 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import { getMovieDetail, getTmdbImageUrl, getTrendingMovies } from "../../api/tmdbApi";
+import {
+  getMovieDetail,
+  getMovieTrailerKey,
+  getTmdbImageUrl,
+  getTrendingMovies,
+} from "../../api/tmdbApi";
 import type { MovieDetail } from "../../api/tmdbApi";
 import InfoButton from "../common/InfoButton";
 import PlayButton from "../common/PlayButton";
+
+const TRAILER_DELAY_MS = 800;
+const HERO_MOVIE_ID = 687163;
+const YOUTUBE_ORIGIN = "https://www.youtube-nocookie.com";
+
+const getTrailerUrl = (key: string) => {
+  const params = new URLSearchParams({
+    autoplay: "1",
+    mute: "1",
+    controls: "0",
+    loop: "1",
+    playlist: key,
+    rel: "0",
+    playsinline: "1",
+    modestbranding: "1",
+    enablejsapi: "1",
+  });
+
+  return `${YOUTUBE_ORIGIN}/embed/${key}?${params.toString()}`;
+};
+
+const pickRandomTrendingMovieId = async () => {
+  const movies = await getTrendingMovies();
+  const candidates = movies
+    .filter((item) => item.backdrop_path && item.overview)
+    .slice(0, 10);
+
+  if (candidates.length === 0) return null;
+
+  return candidates[Math.floor(Math.random() * candidates.length)].id;
+};
 
 interface HeroBannerProps {
   onSelectMovie: (movieId: number) => void;
@@ -11,25 +47,37 @@ interface HeroBannerProps {
 
 export default function HeroBanner({ onSelectMovie }: HeroBannerProps) {
   const [movie, setMovie] = useState<MovieDetail | null>(null);
+  const [trailerKey, setTrailerKey] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isVideoReady, setIsVideoReady] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const hoverTimerRef = useRef<number | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
     let ignore = false;
 
     const loadHeroMovie = async () => {
       try {
-        const movies = await getTrendingMovies();
-        const candidates = movies
-          .filter((item) => item.backdrop_path && item.overview)
-          .slice(0, 10);
+        let heroMovieId: number | null = HERO_MOVIE_ID;
+        let detail = await getMovieDetail(HERO_MOVIE_ID).catch(() => null);
 
-        if (candidates.length === 0) return;
+        if (!detail) {
+          heroMovieId = await pickRandomTrendingMovieId();
 
-        const picked = candidates[Math.floor(Math.random() * candidates.length)];
+          if (heroMovieId === null) return;
 
-        const detail = await getMovieDetail(picked.id);
+          detail = await getMovieDetail(heroMovieId);
+        }
 
         if (!ignore) {
           setMovie(detail);
+        }
+
+        const key = await getMovieTrailerKey(heroMovieId).catch(() => null);
+
+        if (!ignore) {
+          setTrailerKey(key);
         }
       } catch {
         setMovie(null);
@@ -43,14 +91,74 @@ export default function HeroBanner({ onSelectMovie }: HeroBannerProps) {
     };
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (hoverTimerRef.current !== null) {
+        window.clearTimeout(hoverTimerRef.current);
+      }
+    };
+  }, []);
+
+  const handleMouseEnter = () => {
+    if (!trailerKey) return;
+
+    hoverTimerRef.current = window.setTimeout(() => {
+      setIsPlaying(true);
+    }, TRAILER_DELAY_MS);
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimerRef.current !== null) {
+      window.clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = null;
+    }
+
+    setIsPlaying(false);
+    setIsVideoReady(false);
+    setIsMuted(true);
+  };
+
+  const handleToggleMute = () => {
+    iframeRef.current?.contentWindow?.postMessage(
+      JSON.stringify({
+        event: "command",
+        func: isMuted ? "unMute" : "mute",
+        args: [],
+      }),
+      YOUTUBE_ORIGIN,
+    );
+    setIsMuted(!isMuted);
+  };
+
+  const showTrailer = isPlaying && isVideoReady;
+
   return (
-    <section className="relative h-[56.25vw] max-h-[860px] min-h-[460px] w-full overflow-hidden bg-neutral-900">
+    <section
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className="relative h-[56.25vw] max-h-[860px] min-h-[460px] w-full overflow-hidden bg-neutral-900"
+    >
       {movie?.backdropPath && (
         <img
           src={getTmdbImageUrl(movie.backdropPath, "original")}
           alt=""
-          className="absolute inset-0 h-full w-full object-cover object-top"
+          className={`absolute inset-0 h-full w-full object-cover object-top transition-opacity duration-700 ${showTrailer ? "opacity-0" : "opacity-100"}`}
         />
+      )}
+
+      {isPlaying && trailerKey && (
+        <div
+          className={`pointer-events-none absolute inset-0 overflow-hidden transition-opacity duration-700 ${showTrailer ? "opacity-100" : "opacity-0"}`}
+        >
+          <iframe
+            ref={iframeRef}
+            src={getTrailerUrl(trailerKey)}
+            title={`${movie?.title ?? ""} 예고편`}
+            allow="autoplay; encrypted-media"
+            onLoad={() => setIsVideoReady(true)}
+            className="absolute left-1/2 top-1/2 aspect-video w-full min-w-[818px] -translate-x-1/2 -translate-y-1/2 scale-125"
+          />
+        </div>
       )}
 
       <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/20 to-transparent" />
@@ -89,6 +197,20 @@ export default function HeroBanner({ onSelectMovie }: HeroBannerProps) {
             />
           </div>
         </div>
+      )}
+
+      {showTrailer && (
+        <button
+          type="button"
+          onClick={handleToggleMute}
+          aria-label={isMuted ? "소리 켜기" : "소리 끄기"}
+          className="absolute bottom-[18%] right-4 z-10 flex size-11 items-center justify-center rounded-full border-2 border-white/70 bg-black/30 text-white transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:right-8 lg:right-12"
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor" />
+            {isMuted ? <path d="m16 9 5 6M21 9l-5 6" /> : <path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" />}
+          </svg>
+        </button>
       )}
     </section>
   );
