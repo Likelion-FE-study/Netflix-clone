@@ -7,7 +7,17 @@ import {
 import type { TrendingMovie } from "../../api/tmdbApi";
 import MovieModal from "./MovieModal";
 
-export default function Trending() {
+interface TrendingProps {
+  title?: string;
+  onSelect?: (movieId: number) => void;
+  className?: string;
+}
+
+export default function Trending({
+  title = "지금 뜨는 콘텐츠",
+  onSelect,
+  className = "mx-auto max-w-6xl px-6 py-10",
+}: TrendingProps) {
   const [movies, setMovies] = useState<TrendingMovie[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
@@ -55,9 +65,9 @@ export default function Trending() {
 
   if (isLoading) {
     return (
-      <section className="mx-auto max-w-6xl px-6 py-10">
+      <section className={className}>
         <h2 className="mb-6 text-2xl font-bold">
-          지금 뜨는 콘텐츠
+          {title}
         </h2>
 
         <p className="text-gray-400">
@@ -69,9 +79,9 @@ export default function Trending() {
 
   if (errorMessage) {
     return (
-      <section className="mx-auto max-w-6xl px-6 py-10">
+      <section className={className}>
         <h2 className="mb-6 text-2xl font-bold">
-          지금 뜨는 콘텐츠
+          {title}
         </h2>
 
         <p className="text-gray-400">
@@ -82,9 +92,9 @@ export default function Trending() {
   }
 
   return (
-    <section className="mx-auto max-w-6xl px-6 py-10">
+    <section className={className}>
       <h2 className="mb-6 text-2xl font-bold">
-        지금 뜨는 콘텐츠
+        {title}
       </h2>
 
       <div className="relative">
@@ -109,7 +119,9 @@ export default function Trending() {
               <button
                 type="button"
                 aria-label={`${movie.title} 상세 정보 보기`}
-                onClick={() => setSelectedMovieId(movie.id)}
+                onClick={() =>
+                  onSelect ? onSelect(movie.id) : setSelectedMovieId(movie.id)
+                }
                 className="block w-full rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               >
                 <img
