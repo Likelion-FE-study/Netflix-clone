@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import NetflixLogo from "./NetflixLogo";
+
 export interface NavbarMenuItem {
   id: string;
   label: string;
@@ -29,9 +31,7 @@ export default function Navbar({ items = defaultItems, activeItemId, onMenuSelec
     <header className={`relative z-40 text-white ${className}`}>
       <div className="mx-auto flex max-w-screen-2xl flex-wrap items-center gap-x-3 px-4 py-3 sm:gap-x-6 sm:px-8 lg:flex-nowrap lg:px-12">
         <button type="button" aria-label="Netflix 홈" disabled={!onLogoClick} onClick={onLogoClick} className="shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white disabled:cursor-default">
-          <svg aria-hidden="true" viewBox="0 0 111 30" className="h-auto w-20 text-netflix-red sm:w-[93px]" fill="currentColor">
-            <path d="M0 30V0h5l8 19V0h5v28.1l-5 .4L5 10v19.4zM22 0h15v5H27v6h9v5h-9v6.7l10-.8v5l-15 1.2zM40 0h18v5h-6v21.2l-5 .2V5h-7zM61 0h15v5H66v6h9v5h-9v10l-5-.1zM79 0h5v22l9 .7v5l-14-1zM96 0h5v28.3l-5-.5zM104 0h6l4 8 4-8h6l-7 14 7 16-6-.7-4-9-4 8.4-6-.6 7-13.8z" transform="scale(.89 1)" />
-          </svg>
+          <NetflixLogo />
         </button>
         <nav aria-label="주 메뉴" className="order-3 w-full min-w-0 overflow-x-auto pt-3 lg:order-none lg:w-auto lg:flex-1 lg:pt-0">
           <ul className="flex items-center gap-4 pb-1 text-sm whitespace-nowrap lg:gap-5">
