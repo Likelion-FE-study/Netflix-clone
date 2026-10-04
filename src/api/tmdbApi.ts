@@ -1,3 +1,5 @@
+import type { WishlistItem } from "../store/useWishlistStore";
+
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
 
@@ -240,3 +242,66 @@ export const searchMovies = async (
     (item): item is SearchContent => item.media_type === "movie" || item.media_type === "tv",
   );
 };
+
+interface ContentListResult {
+  id: number;
+  media_type?: "movie" | "tv" | "person";
+  title?: string;
+  name?: string;
+  poster_path: string | null;
+  backdrop_path: string | null;
+}
+
+interface ContentListResponse {
+  results: ContentListResult[];
+}
+
+const fetchContentList = async (
+  path: string,
+  defaultMediaType?: WishlistItem["mediaType"],
+  extraParams: Record<string, string> = {},
+): Promise<WishlistItem[]> => {
+  if (!API_KEY) {
+    throw new Error("TMDB API Key가 설정되지 않았습니다.");
+  }
+
+  const params = new URLSearchParams({
+    api_key: API_KEY,
+    language: "ko-KR",
+    ...extraParams,
+  });
+
+  const response = await fetch(`${TMDB_BASE_URL}${path}?${params.toString()}`);
+
+  if (!response.ok) {
+    throw new Error("콘텐츠 목록을 불러오지 못했습니다.");
+  }
+
+  const data: ContentListResponse = await response.json();
+
+  return data.results.flatMap((result): WishlistItem[] => {
+    const mediaType = result.media_type ?? defaultMediaType;
+
+    if (mediaType !== "movie" && mediaType !== "tv") {
+      return [];
+    }
+
+    return [
+      {
+        id: result.id,
+        mediaType,
+        title: result.title ?? result.name ?? "",
+        backdropPath: result.backdrop_path,
+        posterPath: result.poster_path,
+      },
+    ];
+  });
+};
+
+export const getNowPlayingMovies = () =>
+  fetchContentList("/movie/now_playing", "movie", { region: "KR" });
+
+export const getPopularMovies = () =>
+  fetchContentList("/movie/popular", "movie", { region: "KR" });
+
+export const getPopularSeries = () => fetchContentList("/tv/popular", "tv");
