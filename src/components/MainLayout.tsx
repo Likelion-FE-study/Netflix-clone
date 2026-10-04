@@ -15,7 +15,10 @@ const menuPaths: Record<string, string> = {
 // 로그인 후 페이지 공통 틀: 상단 Navbar + 페이지 내용(<Outlet />)
 export default function MainLayout() {
   const navigate = useNavigate();
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
+  const submittedQuery = pathname === "/search"
+    ? new URLSearchParams(search).get("q")?.trim() ?? ""
+    : "";
   const user = getUser();
 
   const activeItemId = Object.keys(menuPaths).find(
@@ -41,7 +44,16 @@ export default function MainLayout() {
         activeItemId={activeItemId}
         onMenuSelect={handleMenuSelect}
         onLogoClick={() => navigate("/main")}
-        searchSlot={<SearchInput />}
+        searchSlot={
+          <SearchInput
+            key={submittedQuery}
+            defaultValue={submittedQuery}
+            onSubmit={(value) => {
+              const query = value.trim();
+              if (query) navigate(`/search?${new URLSearchParams({ q: query })}`);
+            }}
+          />
+        }
         profileSlot={<ProfileMenu email={user?.email} onLogout={handleLogout} />}
         className="bg-gradient-to-b from-black/80 to-transparent"
       />

@@ -201,3 +201,42 @@ export const getTmdbImageUrl = (
 ) => {
   return `https://image.tmdb.org/t/p/${size}${imagePath}`;
 };
+
+type SearchContent =
+  | (TrendingMovie & { media_type: "movie" })
+  | (Omit<TrendingMovie, "title"> & { media_type: "tv"; name: string });
+
+interface MultiSearchResponse {
+  results: (SearchContent | { media_type: "person"; id: number; name: string })[];
+}
+
+export const searchMovies = async (
+  query: string,
+  signal?: AbortSignal,
+): Promise<SearchContent[]> => {
+  const trimmedQuery = query.trim();
+  if (!trimmedQuery) return [];
+
+  if (!API_KEY) {
+    throw new Error("TMDB API Key가 설정되지 않았습니다.");
+  }
+
+  const params = new URLSearchParams({
+    api_key: API_KEY,
+    language: "ko-KR",
+    query: trimmedQuery,
+    include_adult: "false",
+  });
+  const response = await fetch(
+    `${TMDB_BASE_URL}/search/multi?${params.toString()}`,
+    { signal },
+  );
+  if (!response.ok) {
+    throw new Error("콘텐츠 검색에 실패했습니다. 잠시 후 다시 검색해 주세요.");
+  }
+
+  const data: MultiSearchResponse = await response.json();
+  return data.results.filter(
+    (item): item is SearchContent => item.media_type === "movie" || item.media_type === "tv",
+  );
+};
