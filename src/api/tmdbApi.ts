@@ -8,6 +8,7 @@ const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 export interface TrendingMovie {
   id: number;
   title: string;
+  overview: string;
   poster_path: string | null;
   backdrop_path: string | null;
 }

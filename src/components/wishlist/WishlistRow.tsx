@@ -1,6 +1,7 @@
 import { useWishlistStore } from "../../store/useWishlistStore";
 import type { WishlistItem } from "../../store/useWishlistStore";
 import ContentCard from "../common/ContentCard";
+import ScrollSlider from "../common/ScrollSlider";
 
 interface WishlistRowProps {
   onSelect?: (item: WishlistItem) => void;
@@ -20,7 +21,7 @@ export default function WishlistRow({ onSelect }: WishlistRowProps) {
         내가 찜한 리스트
       </h2>
 
-      <div className="flex gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:px-8 lg:px-12 [&::-webkit-scrollbar]:hidden">
+      <ScrollSlider className="px-12">
         {items.map((item) => (
           <ContentCard
             key={`${item.mediaType}-${item.id}`}
@@ -29,7 +30,7 @@ export default function WishlistRow({ onSelect }: WishlistRowProps) {
             className="w-[260px] shrink-0 sm:w-[320px] lg:w-[390px]"
           />
         ))}
-      </div>
+      </ScrollSlider>
     </section>
   );
 }

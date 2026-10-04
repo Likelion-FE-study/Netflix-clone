@@ -18,7 +18,9 @@ export default function HeroBanner({ onSelectMovie }: HeroBannerProps) {
     const loadHeroMovie = async () => {
       try {
         const movies = await getTrendingMovies();
-        const candidates = movies.filter((item) => item.backdrop_path).slice(0, 10);
+        const candidates = movies
+          .filter((item) => item.backdrop_path && item.overview)
+          .slice(0, 10);
 
         if (candidates.length === 0) return;
 

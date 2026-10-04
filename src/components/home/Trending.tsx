@@ -97,12 +97,12 @@ export default function Trending({
         {title}
       </h2>
 
-      <div className="relative">
+      <div className="group relative">
         <button
           type="button"
           onClick={handlePrevious}
           aria-label="이전 콘텐츠"
-          className="absolute left-0 top-1/2 z-20 h-28 -translate-y-1/2 rounded bg-neutral-800/90 px-3 text-4xl transition hover:bg-neutral-700"
+          className="absolute left-0 top-1/2 z-20 h-28 -translate-y-1/2 rounded bg-neutral-800/90 px-3 text-4xl opacity-0 transition group-hover:opacity-100 hover:bg-neutral-700 focus-visible:opacity-100"
         >
           ‹
         </button>
@@ -145,7 +145,7 @@ export default function Trending({
           type="button"
           onClick={handleNext}
           aria-label="다음 콘텐츠"
-          className="absolute right-0 top-1/2 z-20 h-28 -translate-y-1/2 rounded bg-neutral-800/90 px-3 text-4xl transition hover:bg-neutral-700"
+          className="absolute right-0 top-1/2 z-20 h-28 -translate-y-1/2 rounded bg-neutral-800/90 px-3 text-4xl opacity-0 transition group-hover:opacity-100 hover:bg-neutral-700 focus-visible:opacity-100"
         >
           ›
         </button>

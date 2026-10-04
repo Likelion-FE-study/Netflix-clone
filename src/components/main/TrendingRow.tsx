@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { getTrendingMovies } from "../../api/tmdbApi";
 import type { WishlistItem } from "../../store/useWishlistStore";
 import ContentCard from "../common/ContentCard";
+import ScrollSlider from "../common/ScrollSlider";
 
 const fetchTrendingItems = async (): Promise<WishlistItem[]> => {
   const movies = await getTrendingMovies();
@@ -64,7 +65,7 @@ export default function TrendingRow({
       {errorMessage ? (
         <p className="px-4 text-neutral-400 sm:px-8 lg:px-12">{errorMessage}</p>
       ) : (
-        <div className="flex gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:px-8 lg:px-12 [&::-webkit-scrollbar]:hidden">
+        <ScrollSlider className="px-12">
           {items.map((item) => (
             <ContentCard
               key={`${item.mediaType}-${item.id}`}
@@ -73,7 +74,7 @@ export default function TrendingRow({
               className="w-[260px] shrink-0 sm:w-[320px] lg:w-[390px]"
             />
           ))}
-        </div>
+        </ScrollSlider>
       )}
     </section>
   );
