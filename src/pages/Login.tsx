@@ -35,13 +35,13 @@ export default function Login() {
 
   return (
     <main className="relative flex min-h-screen items-center justify-center bg-black px-6 text-white">
-      <header className="absolute inset-x-0 top-0 mx-auto w-full max-w-[1280px] px-6 py-6 md:px-12">
+      <header className="absolute inset-x-0 top-0 mx-auto flex min-h-16 w-full max-w-screen-2xl items-center px-4 py-3 sm:px-8 lg:px-12">
         <Link
           to="/"
           aria-label="Netflix 홈"
-          className="inline-block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+          className="shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
         >
-          <NetflixLogo className="w-[90px] md:w-[148px]" />
+          <NetflixLogo />
         </Link>
       </header>
 

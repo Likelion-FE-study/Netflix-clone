@@ -18,13 +18,13 @@ export default function Header({
   };
 
   return (
-    <header className="mx-auto flex w-full max-w-[1280px] items-center justify-between px-6 py-6 md:px-12">
+    <header className="mx-auto flex min-h-16 w-full max-w-screen-2xl items-center justify-between gap-x-4 px-4 py-3 sm:px-8 lg:px-12">
       <Link
         to="/"
         aria-label="Netflix"
         className="shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
       >
-        <NetflixLogo className="w-[90px] md:w-[148px]" />
+        <NetflixLogo />
       </Link>
 
       <div className="flex items-center gap-3">
