@@ -1,9 +1,11 @@
+import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router";
 
 import { getUser, logoutUser } from "../utils/authStorage";
 import Navbar from "./common/Navbar";
 import type { NavbarMenuItem } from "./common/Navbar";
 import ProfileMenu from "./common/ProfileMenu";
+import Footer from "./home/Footer";
 import SearchInput from "./search/SearchInput";
 
 // 메뉴 id → 이동할 주소 (아직 페이지가 없는 메뉴는 여기에 추가하면 됩니다)
@@ -20,6 +22,16 @@ export default function MainLayout() {
     ? new URLSearchParams(search).get("q")?.trim() ?? ""
     : "";
   const user = getUser();
+  const isMainPage = pathname === "/main";
+  const [isScrolled, setIsScrolled] = useState(() => window.scrollY > 0);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 0);
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const activeItemId = Object.keys(menuPaths).find(
     (id) => menuPaths[id] === pathname,
@@ -40,25 +52,29 @@ export default function MainLayout() {
 
   return (
     <div className="min-h-screen bg-netflix-black text-white">
-      <Navbar
-        activeItemId={activeItemId}
-        onMenuSelect={handleMenuSelect}
-        onLogoClick={() => navigate("/main")}
-        searchSlot={
-          <SearchInput
-            key={submittedQuery}
-            defaultValue={submittedQuery}
-            onSubmit={(value) => {
-              const query = value.trim();
-              if (query) navigate(`/search?${new URLSearchParams({ q: query })}`);
-            }}
-          />
-        }
-        profileSlot={<ProfileMenu email={user?.email} onLogout={handleLogout} />}
-        className="bg-gradient-to-b from-black/80 to-transparent"
-      />
+      <div className={`${isMainPage ? "fixed inset-x-0" : "sticky"} top-0 z-40`}>
+        <Navbar
+          activeItemId={activeItemId}
+          onMenuSelect={handleMenuSelect}
+          onLogoClick={() => navigate("/main")}
+          searchSlot={
+            <SearchInput
+              key={submittedQuery}
+              defaultValue={submittedQuery}
+              onSubmit={(value) => {
+                const query = value.trim();
+                if (query) navigate(`/search?${new URLSearchParams({ q: query })}`);
+              }}
+            />
+          }
+          profileSlot={<ProfileMenu email={user?.email} onLogout={handleLogout} />}
+          className={`transition-colors duration-300 ${isScrolled ? "bg-netflix-black" : "bg-gradient-to-b from-black/80 to-transparent"}`}
+        />
+      </div>
 
       <Outlet />
+
+      <Footer variant="main" />
     </div>
   );
 }

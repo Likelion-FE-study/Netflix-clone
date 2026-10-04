@@ -1,5 +1,7 @@
 import { Link } from "react-router";
 
+import NetflixLogo from "../common/NetflixLogo";
+
 interface HeaderProps {
   language: "ko" | "en";
   onLanguageChange: (language: "ko" | "en") => void;
@@ -16,13 +18,13 @@ export default function Header({
   };
 
   return (
-    <header className="mx-auto flex w-full max-w-[1280px] items-center justify-between px-6 py-6 md:px-12">
+    <header className="mx-auto flex min-h-16 w-full max-w-screen-2xl items-center justify-between gap-x-4 px-4 py-3 sm:px-8 lg:px-12">
       <Link
         to="/"
-        className="text-3xl font-black tracking-[-2px] text-[#e50914] md:text-4xl"
         aria-label="Netflix"
+        className="shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
       >
-        NETFLIX
+        <NetflixLogo />
       </Link>
 
       <div className="flex items-center gap-3">

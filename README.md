@@ -1,3 +1,9 @@
+## 🔗 배포 링크
+
+🚀 [D-Netflix 바로가기](https://netflix-clone-ten-pi-88.vercel.app/))
+
+---
+
 # 🎬 Netflix Clone
 
 Netflix UI/UX를 참고하여 제작하는 프론트엔드 클론 코딩 프로젝트입니다.
@@ -51,29 +57,29 @@ React와 TypeScript를 기반으로 구현하며 Tailwind CSS를 사용하여 �
 ```text
 Issue 생성
 ↓
-최신 develop에서 작업 브랜치 생성
+최신 dev에서 작업 브랜치 생성
 ↓
 기능 구현 및 자체 테스트
 ↓
-작업 브랜치 → develop PR
+작업 브랜치 → dev PR
 ↓
 팀원 최소 1명 검토
 ↓
-develop Merge
+dev Merge
 ↓
 작업 브랜치 삭제
 ```
 
 > `main`은 배포용 브랜치로 사용합니다.  
-> 모든 기능 개발은 `develop`을 기준으로 진행하며, 배포 시에만 `develop` → `main`으로 Merge합니다.
+> 모든 기능 개발은 `dev`을 기준으로 진행하며, 배포 시에만 `dev` → `main`으로 Merge합니다.
 
 ### Branch
 
-작업 브랜치는 항상 최신 `develop`에서 생성합니다.
+작업 브랜치는 항상 최신 `dev`에서 생성합니다.
 
 ```bash
-git checkout develop
-git pull origin develop
+git checkout dev
+git pull origin dev
 git checkout -b feat/2-login
 ```
 
@@ -87,19 +93,19 @@ fix/3-login-error
 refactor/7-button
 ```
 
-다른 작업이 먼저 Merge되었다면 PR 전에 최신 `develop`을 반영합니다.
+다른 작업이 먼저 Merge되었다면 PR 전에 최신 `dev`을 반영합니다.
 
 ```bash
-git checkout develop
-git pull origin develop
+git checkout dev
+git pull origin dev
 
 git checkout 작업브랜치명
-git merge develop
+git merge dev
 ```
 
 ### Pull Request
 
-- PR의 base 브랜치는 `develop`으로 설정합니다.
+- PR의 base 브랜치는 `dev`으로 설정합니다.
 - PR 전 기능 동작과 `npm run build`를 확인합니다.
 - PR에 `Closes #이슈번호`를 작성합니다.
 - PR 작성자를 제외한 **팀원 최소 1명이 브랜치를 직접 실행하여 확인한 후 Merge**합니다.
@@ -146,4 +152,4 @@ refactor: Header 컴포넌트 분리
 
 ## 🚀 Deployment
 
-모든 기능 개발과 테스트가 완료되면 `develop` → `main` PR을 생성하고 Vercel을 통해 배포합니다.
+모든 기능 개발과 테스트가 완료되면 `dev` → `main` PR을 생성하고 Vercel을 통해 배포합니다.
