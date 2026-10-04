@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import MyList from "./pages/MyList";
 import NotFound from "./pages/NotFound";
 import Signup from "./pages/Signup";
+import Search from "./pages/Search";
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
         <Route element={<MainLayout />}>
           <Route path="main" element={<MainPage />} />
           <Route path="my-list" element={<MyList />} />
+          <Route path="search" element={<Search />} />
         </Route>
       </Route>
 
