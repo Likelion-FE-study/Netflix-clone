@@ -1,41 +1,38 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 
-import { getUser, loginUser } from "../utils/authStorage";
+import { saveUser } from "../utils/authStorage";
 
-export default function Login() {
+export default function Signup() {
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(
+    localStorage.getItem("signupEmail") ?? "",
+  );
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const user = getUser();
+    saveUser({
+      email,
+      password,
+    });
 
-    if (!user) {
-      setErrorMessage("등록된 계정이 없습니다.");
-      return;
-    }
+    localStorage.removeItem("signupEmail");
 
-    if (user.email !== email || user.password !== password) {
-      setErrorMessage("이메일 또는 비밀번호가 올바르지 않습니다.");
-      return;
-    }
-
-    loginUser();
-
-    // 로그인 성공 시 MainPage로 이동
-    navigate("/main");
+    navigate("/login");
   };
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-black px-6 text-white">
-      <div className="w-full max-w-md rounded bg-black/80 p-10">
-        <h1 className="mb-8 text-3xl font-bold">로그인</h1>
+      <div className="w-full max-w-md p-8">
+        <h1 className="mb-3 text-3xl font-bold">회원가입</h1>
+
+        <p className="mb-8 text-gray-400">
+          이메일과 비밀번호를 입력하여 계정을 만들어 주세요.
+        </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
@@ -52,28 +49,18 @@ export default function Login() {
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             placeholder="비밀번호"
+            minLength={4}
             required
             className="w-full rounded bg-neutral-800 px-4 py-4 outline-none focus:ring-2 focus:ring-white"
           />
-
-          {errorMessage && (
-            <p className="text-sm text-red-500">{errorMessage}</p>
-          )}
 
           <button
             type="submit"
             className="w-full rounded bg-red-600 py-3 font-bold transition hover:bg-red-700"
           >
-            로그인
+            가입하기
           </button>
         </form>
-
-        <p className="mt-8 text-gray-400">
-          Netflix 회원이 아닌가요?{" "}
-          <Link to="/signup" className="text-white hover:underline">
-            지금 가입하세요.
-          </Link>
-        </p>
       </div>
     </main>
   );
